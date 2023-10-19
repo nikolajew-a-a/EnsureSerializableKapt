@@ -1,2 +1,2 @@
 # EnsureSerializableKapt
-Example of using Kapt. The processor checks that all classes marked as @serializable, that all child elements are marked as @serializable
+Example of using Kapt. The "EnsureSerializableProcessor" check that all classes marked as serializable, contains only child elements that marked as serializable too. The "EnsureSerializableProcessor" checks only classes marked as @EnsureSerializable
