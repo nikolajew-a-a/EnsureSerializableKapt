@@ -23,7 +23,16 @@ class EnsureSerializableProcessor : AbstractProcessor() {
             ?.filter { it.kind == ElementKind.CLASS }
             ?.filterIsInstance<TypeElement>()
             ?: emptyList()
-        symbols.forEach { node -> processRecursively(node) }
+        symbols.forEach { node ->
+            if (!implementsSerializableInterface(node)) {
+                processingEnv.messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    rootErrorMessage(node)
+                )
+            } else {
+                processRecursively(node)
+            }
+        }
         return true
     }
 
@@ -41,15 +50,21 @@ class EnsureSerializableProcessor : AbstractProcessor() {
 
         for (childNode in childNodes) {
             if (!implementsSerializableInterface(childNode)) {
-                val message = errorMessage(node, childNode)
-                processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, message)
+                processingEnv.messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    childErrorMessage(node, childNode)
+                )
             } else {
                 processRecursively(childNode)
             }
         }
     }
 
-    private fun errorMessage(node: TypeElement, childNode: TypeElement): String {
+    private fun rootErrorMessage(node: TypeElement): String {
+        return "Class \"${node.simpleName}\" is not serializable"
+    }
+
+    private fun childErrorMessage(node: TypeElement, childNode: TypeElement): String {
         return "Class \"${node.simpleName}\" has not serializable child of type \"${childNode.simpleName}\""
     }
 

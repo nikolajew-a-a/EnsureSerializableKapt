@@ -7,7 +7,7 @@ import java.io.Serializable
 data class GrandParent constructor(
     val a: String,
     val b: Parent,
-)
+) : Serializable
 
 data class Parent(
     val a: Child1,
